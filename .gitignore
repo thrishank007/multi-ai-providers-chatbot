@@ -1,4 +1,4 @@
 /.env
 /MVP.md
 /venv
-/__pycache__
+**/__pycache__/

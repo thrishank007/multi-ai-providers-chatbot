@@ -10,15 +10,49 @@ class LLMBridge:
     def __init__(self):
         self.providers = {
             "OpenAI": {
-                "models": ["o3", "gpt-4.1", "gpt-4o", "o4-mini-deep-research"],
-                "default_model": "o3"
+                "models": [
+                    # 2025 OpenAI Models
+                    "gpt-4.1",
+                    "o3", 
+                    "gpt-4o",
+                    "o4-mini-deep-research",
+                    "gpt-4.1-mini",
+                    "gpt-4.1-nano",
+                    "o3-pro",
+                    # Legacy models for compatibility
+                    "gpt-4",
+                    "gpt-4-turbo",
+                    "gpt-3.5-turbo"
+                ],
+                "default_model": "gpt-4.1"
             },
             "Anthropic": {
-                "models": ["claude-sonnet-4-20250514", "claude-3-7-sonnet-20250219", "claude-opus-4-20250514"],
+                "models": [
+                    # 2025 Claude 4 Models
+                    "claude-sonnet-4-20250514",
+                    "claude-opus-4-20250514", 
+                    # Legacy Claude 3 models for compatibility
+                    "claude-3-7-sonnet-20250219",
+                    "claude-3-5-sonnet-20241022",
+                    "claude-3-5-haiku-20241022",
+                    "claude-3-opus-20240229",
+                    "claude-3-sonnet-20240229",
+                    "claude-3-haiku-20240307"
+                ],
                 "default_model": "claude-sonnet-4-20250514"
             },
             "Gemini": {
-                "models": ["gemini-2.5-pro", "gemini-2.5-flash", "gemini-2.5-flash-lite","gemini-pro-vision"],
+                "models": [
+                    # 2025 Gemini Models
+                    "gemini-2.5-pro",
+                    "gemini-2.5-flash",
+                    "gemini-2.5-flash-lite",
+                    "gemini-2.0-flash",
+                    "gemini-2.0-flash-lite",
+                    # Legacy models for compatibility
+                    "gemini-pro",
+                    "gemini-pro-vision"
+                ],
                 "default_model": "gemini-2.5-pro"
             }
         }
