@@ -70,35 +70,46 @@ def main():
             st.session_state.login_time = None
             st.warning("Session expired. Please log in again.")
     
-    # Navigation
+    # Navigation using dropdown
     if st.session_state.user_id is None:
-        # User not logged in
-        page = st.sidebar.selectbox("Navigation", ["Login", "Register"])
+        # User not logged in - show login/register options
+        st.sidebar.markdown("### Navigation")
         
-        if page == "Login":
-            from pages.login import show_login_page
+        page_options = ["🔐 Login", "📝 Register"]
+        selected_page = st.sidebar.selectbox("Choose a page:", page_options)
+        
+        if selected_page == "🔐 Login":
+            from page_modules.login import show_login_page
             show_login_page()
-        elif page == "Register":
-            from pages.register import show_register_page
+        elif selected_page == "📝 Register":
+            from page_modules.register import show_register_page
             show_register_page()
     else:
-        # User logged in
+        # User logged in - show main navigation
         st.sidebar.success(f"Welcome, {st.session_state.username}!")
+        st.sidebar.markdown("### Navigation")
         
         # Check if user is admin
         from core.auth import is_admin
-        if is_admin(st.session_state.user_id):
-            page = st.sidebar.selectbox("Navigation", ["Chat", "Admin Dashboard", "Logout"])
-        else:
-            page = st.sidebar.selectbox("Navigation", ["Chat", "Logout"])
         
-        if page == "Chat":
-            from pages.chat import show_chat_page
+        # Build navigation options based on user role
+        page_options = ["💬 Chat"]
+        
+        if is_admin(st.session_state.user_id):
+            page_options.append("👑 Admin Dashboard")
+        
+        page_options.append("🚪 Logout")
+        
+        selected_page = st.sidebar.selectbox("Choose a page:", page_options)
+        
+        if selected_page == "💬 Chat":
+            from page_modules.chat import show_chat_page
             show_chat_page()
-        elif page == "Admin Dashboard":
-            from pages.admin import show_admin_page
+        elif selected_page == "👑 Admin Dashboard":
+            from page_modules.admin import show_admin_page
             show_admin_page()
-        elif page == "Logout":
+        elif selected_page == "🚪 Logout":
+            # Handle logout
             st.session_state.user_id = None
             st.session_state.username = None
             st.session_state.is_admin = False
