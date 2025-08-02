@@ -116,22 +116,20 @@ Admins can access the admin dashboard to view:
 
 Each user must provide their own API keys for the AI providers they want to use. Keys are not stored permanently and must be entered each session for security.
 
-### Supported Providers and Models
+## Supported Providers & Models
 
-**OpenAI:**
-- GPT-4
-- GPT-4 Turbo
-- GPT-3.5 Turbo
-- GPT-3.5 Turbo 16K
+| Provider   | Models                                                                                   |
+|------------|------------------------------------------------------------------------------------------|
+| **OpenAI** | o3, gpt-4.1, gpt-4o, o4-mini-deep-research                                              |
+| **Anthropic** | claude-sonnet-4-20250514, claude-3-7-sonnet-20250219, claude-opus-4-20250514         |
+| **Gemini** | gemini-2.5-pro, gemini-2.5-flash, gemini-2.5-flash-lite, gemini-pro-vision              |
 
-**Anthropic:**
-- Claude 3 Opus
-- Claude 3 Sonnet
-- Claude 3 Haiku
+- **Default Models:**
+  - OpenAI: `o3`
+  - Anthropic: `claude-sonnet-4-20250514`
+  - Gemini: `gemini-2.5-pro`
 
-**Google Gemini:**
-- Gemini Pro
-- Gemini Pro Vision
+See `core/providers.py` for the latest model list and integration details.
 
 ## Memory System
 
