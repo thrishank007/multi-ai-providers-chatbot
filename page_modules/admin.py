@@ -14,13 +14,15 @@ supabase: Client = create_client(
 
 def show_admin_page():
     """Display the admin dashboard"""
-    st.title("👑 Admin Dashboard")
+    st.title("Admin Dashboard")
     
     # Check if user is admin
     from core.auth import is_admin
     if not is_admin(st.session_state.user_id):
         st.error("Access denied. Admin privileges required.")
         return
+    
+    st.info("This dashboard provides an overview of user activity and system usage.")
     
     # Date range selector
     col1, col2 = st.columns(2)
@@ -53,6 +55,10 @@ def show_admin_page():
         
     except Exception as e:
         st.error(f"Error fetching data: {e}")
+        return
+    
+    if df_analytics.empty and df_users.empty:
+        st.warning("No data available. The dashboard will populate as users interact with the chatbot.")
         return
     
     # Overview metrics
@@ -189,14 +195,20 @@ def show_admin_page():
         with col1:
             st.write("**All Users**")
             user_display = df_users[['username', 'email', 'is_admin', 'created_at']].copy()
-            user_display['created_at'] = pd.to_datetime(user_display['created_at']).dt.strftime('%Y-%m-%d')
+            
+            # Fix datetime formatting by removing timezone info first
+            user_display['created_at'] = pd.to_datetime(user_display['created_at']).dt.tz_localize(None).dt.strftime('%Y-%m-%d')
             st.dataframe(user_display, use_container_width=True)
         
         with col2:
             st.write("**User Statistics**")
             total_users = len(df_users)
             admin_users = df_users['is_admin'].sum()
-            recent_users = len(df_users[pd.to_datetime(df_users['created_at']) > (datetime.now() - timedelta(days=7))])
+            
+            # Fix timezone issue for datetime comparison
+            seven_days_ago = datetime.now().replace(tzinfo=None) - timedelta(days=7)
+            user_created_dates = pd.to_datetime(df_users['created_at']).dt.tz_localize(None)
+            recent_users = len(df_users[user_created_dates > seven_days_ago])
             
             st.metric("Total Users", total_users)
             st.metric("Admin Users", admin_users)
@@ -205,7 +217,13 @@ def show_admin_page():
     # Recent activity log
     st.subheader("📋 Recent Activity")
     
-    recent_activity = df_analytics.nlargest(50, 'created_at')
+    if not df_analytics.empty:
+        # Convert created_at to datetime for proper sorting
+        df_analytics['created_at_dt'] = pd.to_datetime(df_analytics['created_at'])
+        recent_activity = df_analytics.nlargest(50, 'created_at_dt')
+    else:
+        recent_activity = df_analytics
+    
     if not recent_activity.empty and not df_users.empty:
         recent_activity = recent_activity.merge(
             df_users[['id', 'username']], 
@@ -218,7 +236,9 @@ def show_admin_page():
         activity_display = recent_activity[[
             'username', 'provider', 'model', 'total_tokens', 'estimated_cost', 'created_at'
         ]].copy()
-        activity_display['created_at'] = pd.to_datetime(activity_display['created_at']).dt.strftime('%Y-%m-%d %H:%M:%S')
+        
+        # Fix datetime formatting by removing timezone info first
+        activity_display['created_at'] = pd.to_datetime(activity_display['created_at']).dt.tz_localize(None).dt.strftime('%Y-%m-%d %H:%M:%S')
         activity_display['estimated_cost'] = activity_display['estimated_cost'].round(4)
         
         st.dataframe(activity_display, use_container_width=True)
